@@ -1,0 +1,7 @@
+streamlit==1.43
+pandas
+numpy
+seaborn
+matplotlib
+openpyxl
+xlsxwriter
