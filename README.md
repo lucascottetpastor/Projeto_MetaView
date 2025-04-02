@@ -25,15 +25,15 @@ O código utiliza as seguintes bibliotecas:
 
 - `streamlit:` Para criação da interface web interativa.
   
-- `**pandas**:` Para manipulação e análise dos dados do arquivo Excel.
+- `pandas:` Para manipulação e análise dos dados do arquivo Excel.
 
-- `**numpy**:` Para operações numéricas e tratamento de dados.
+- `numpy:` Para operações numéricas e tratamento de dados.
   
-- `**matplotlib**:` Para geração de gráficos e visualizações.
+- `matplotlib:` Para geração de gráficos e visualizações.
   
-- `**seaborn**:` Para gráficos estatísticos com estilo aprimorado.
+- `seaborn:` Para gráficos estatísticos com estilo aprimorado.
   
-- `**openpyxl / xlsxwriter**:` Para leitura e escrita de arquivos Excel.
+- `openpyxl / xlsxwriter:` Para leitura e escrita de arquivos Excel.
   
 ## ✔️ Tecnologia utilizada
 
