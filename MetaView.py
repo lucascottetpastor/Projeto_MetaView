@@ -22,37 +22,33 @@ def lerexcel(dia, arquivo, arquivo_guia):
     df_guia['Pessoas meta'] = df_guia['Pessoas/dia'] * quantidade_digitado
     return df, df_guia
 
-def meta1(df, df_guia, status_selecionados, filtrar_por_id):
-    if not status_selecionados: 
+def meta1(df, df_guia, status_selecionados, formatos_selecionados, filtrar_por_id):
+    if not status_selecionados or not formatos_selecionados:
         return pd.DataFrame(columns=['Instrutor', 'Lojas por Dia', 'Meta', 'Lojas Treinadas', '%'])
-    
-    if filtrar_por_id: 
+    if filtrar_por_id:
         df = df.drop_duplicates(subset='COD. LOJA/LOCAL')
-    
     df = df[df['STATUS'].isin(status_selecionados)]
-    if df.empty: 
+    df = df[df['FORMATO'].isin(formatos_selecionados)]
+    if df.empty:
         return pd.DataFrame(columns=['Instrutor', 'Lojas por Dia', 'Meta', 'Lojas Treinadas', '%'])
-    
     df = df[df['LOJA/LOCAL'] != "Home Office"]
     df_meta = df.groupby('INSTRUTOR')["LOJA/LOCAL"].count().reset_index()
     df_final = df_meta.merge(df_guia, on='INSTRUTOR', how='outer')
     df_final['%'] = df_final['LOJA/LOCAL'] / df_final['Lojas meta'] * 100
     df_final['%'] = df_final['%'].astype(float).round(0)
     df_final = df_final[['INSTRUTOR', 'Lojas/dia', 'Lojas meta', 'LOJA/LOCAL', '%']]
-    df_final.columns =  ['Instrutor', 'Lojas por Dia', 'Meta', 'Lojas Treinadas', '%']
+    df_final.columns = ['Instrutor', 'Lojas por Dia', 'Meta', 'Lojas Treinadas', '%']
     return df_final
 
-def meta2(df, df_guia, status_selecionados, filtrar_por_id):
-    if not status_selecionados: 
+def meta2(df, df_guia, status_selecionados, formatos_selecionados, filtrar_por_id):
+    if not status_selecionados or not formatos_selecionados:
         return pd.DataFrame(columns=['Instrutor', 'Pessoas por Dia', 'Meta', 'Pessoas Treinadas', '%'])
-    
-    if filtrar_por_id: 
+    if filtrar_por_id:
         df = df.drop_duplicates(subset='COD. LOJA/LOCAL')
-    
     df = df[df['STATUS'].isin(status_selecionados)]
-    if df.empty: 
+    df = df[df['FORMATO'].isin(formatos_selecionados)]
+    if df.empty:
         return pd.DataFrame(columns=['Instrutor', 'Pessoas por Dia', 'Meta', 'Pessoas Treinadas', '%'])
-    
     df_meta = df.groupby('INSTRUTOR')["PART. INSTRUTOR"].sum().reset_index()
     df_merged = df_meta.merge(df_guia, on='INSTRUTOR', how='outer')
     df_merged['%'] = df_merged['PART. INSTRUTOR'] / df_merged['Pessoas meta'] * 100
@@ -62,39 +58,32 @@ def meta2(df, df_guia, status_selecionados, filtrar_por_id):
     return df_merged
 
 def meta3(df, status_selecionados, filtrar_por_id):
-    if not status_selecionados: 
+    if not status_selecionados:
         return pd.DataFrame(columns=['Instrutor', 'Media de AVALIAÇÃO TREINAMENTO'])
-    
-    if filtrar_por_id: 
+    if filtrar_por_id:
         df = df.drop_duplicates(subset='COD. LOJA/LOCAL')
-    
     df = df[df['FORMATO'].isin(status_selecionados)]
     df = df[df['AVALIAÇÃO TREINAMENTO'].notnull()]
-    if df.empty: 
+    if df.empty:
         return pd.DataFrame(columns=['Instrutor', 'Media de AVALIAÇÃO TREINAMENTO'])
-    
     df['AVALIAÇÃO TREINAMENTO'] = pd.to_numeric(df['AVALIAÇÃO TREINAMENTO'], errors='coerce').astype(float)
     df_meta = df.groupby('INSTRUTOR')['AVALIAÇÃO TREINAMENTO'].mean().reset_index()
-    df_meta['AVALIAÇÃO TREINAMENTO'] = df_meta['AVALIAÇÃO TREINAMENTO'].round(1)
+    df_meta['AVALIAÇÃO TREINAMENTO'] = df_meta['AVALIAÇÃO TREINAMENTO'].round(2)
     df_meta.columns = ['Instrutor', 'Media de AVALIAÇÃO TREINAMENTO']
     return df_meta
 
 def meta4(df, status_selecionados, filtrar_por_id):
-    if not status_selecionados: 
+    if not status_selecionados:
         return pd.DataFrame(columns=['INSTRUTOR', 'FORMATO', 'Quantidade'])
-    
     df = df[df['STATUS'].isin(status_selecionados)]
-    if filtrar_por_id: 
+    if filtrar_por_id:
         df = df.drop_duplicates(subset='COD. LOJA/LOCAL')
-    
-    if df.empty: 
+    if df.empty:
         return pd.DataFrame(columns=['INSTRUTOR', 'FORMATO', 'Quantidade'])
-    
     try:
         df_grouped = df.groupby(['INSTRUTOR', 'FORMATO']).size().reset_index(name='Quantidade')
-        if df_grouped.empty: 
+        if df_grouped.empty:
             return pd.DataFrame(columns=['INSTRUTOR', 'FORMATO', 'Quantidade'])
-        
         df_pivot = df_grouped.pivot(index='FORMATO', columns='INSTRUTOR', values='Quantidade').fillna(0)
         df_pivot['Total Geral'] = df_pivot.sum(axis=1)
         totais = df_pivot.sum(axis=0)
@@ -104,12 +93,11 @@ def meta4(df, status_selecionados, filtrar_por_id):
         st.error(f"Erro ao criar pivot table: {e}")
         return pd.DataFrame(columns=['INSTRUTOR', 'FORMATO', 'Quantidade'])
 
-def meta5(df, filtrar_por_id):
+def meta5(df, formatos_selecionados, filtrar_por_id):
     if filtrar_por_id:
         df = df.drop_duplicates(subset='COD. LOJA/LOCAL')
-    
     df = df[df['STATUS'].isin(['Realizado', 'No-show', 'Cancelado'])]
-    df = df[df['FORMATO'].isin(['On The Job', 'Presencial'])]
+    df = df[df['FORMATO'].isin(formatos_selecionados)]
     df = df[['INSTRUTOR', 'LOJA/LOCAL', 'AVALIAÇÃO CONHECIMENTO']]
     df1 = df.copy()
     df = df[df['LOJA/LOCAL'] != 'Home Office']
@@ -124,20 +112,6 @@ def meta5(df, filtrar_por_id):
     df = df.sort_values(by='INSTRUTOR', ascending=True)
     df1 = df1.sort_values(by='INSTRUTOR', ascending=True)
     return df1, df
-
-def exibir_grafico(df, titulo, x, y, hue):
-    if df.empty:
-        st.warning(f"Sem dados para gerar o gráfico: {titulo}")
-        return
-    df_melted = df.melt(id_vars="Instrutor", value_vars=[x, y], var_name="Tipo", value_name="Quantidade")
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.barplot(data=df_melted, x="Instrutor", y="Quantidade", hue="Tipo", ax=ax)
-    ax.set_title(titulo)
-    ax.set_xlabel("Instrutor")
-    ax.set_ylabel("Quantidade")
-    plt.xticks(rotation=45, ha="right")
-    st.pyplot(fig)
-
 
 st.image("logo_saiba_mais atualizado full wht.png", width=350)
 
@@ -154,18 +128,10 @@ st.markdown("""
 dias = st.number_input("Digite a quantidade de dias úteis:", min_value=1, step=1)
 st.success(f"Você escolheu {dias} dias úteis.")
 
-st.markdown("""
-    <h3 style='font-size: 24px; color: white;'>
-        📁 Insira o arquivo Excel dos <strong>DADOS</strong>
-    </h3>
-""", unsafe_allow_html=True)
+st.markdown("""<h3 style='font-size: 24px; color: white;'>📁 Insira o arquivo Excel dos <strong>DADOS</strong></h3>""", unsafe_allow_html=True)
 arquivo = st.file_uploader("", type=["xls", "xlsx"], key="dados_file")
 
-st.markdown("""
-    <h3 style='font-size: 24px; color: white;'>
-        📋 Insira o arquivo Excel do <strong>GUIA INSTRUTORES</strong>
-    </h3>
-""", unsafe_allow_html=True)
+st.markdown("""<h3 style='font-size: 24px; color: white;'>📋 Insira o arquivo Excel do <strong>GUIA INSTRUTORES</strong></h3>""", unsafe_allow_html=True)
 arquivo_guia = st.file_uploader("", type=["xls", "xlsx"], key="guia_file")
 
 if arquivo and arquivo_guia:
@@ -187,10 +153,10 @@ if arquivo and arquivo_guia:
         st.subheader("META POR LOJA")
         filtrar1 = st.checkbox("Filtrar IDs únicos - Meta 1")
         status1 = st.multiselect("Status para META 1:", status_opcoes_status, default=status_opcoes_status)
-        df_meta1 = meta1(df, df_guia, status1, filtrar1)
+        formatos_selecionados1 = st.multiselect("Formatos para META 1:", status_opcoes_formato, default=status_opcoes_formato)
+        df_meta1 = meta1(df, df_guia, status1, formatos_selecionados1, filtrar1)
         if not df_meta1.empty:
             st.dataframe(df_meta1, hide_index=True)
-            exibir_grafico(df_meta1, "Lojas por Dia", "Meta", "Lojas Treinadas", "Tipo")
         else:
             st.warning("Nenhum dado encontrado para META 1.")
 
@@ -204,13 +170,13 @@ if arquivo and arquivo_guia:
             st.warning("Nenhum dado encontrado para META 3.")
 
     with col2:
-        st.subheader("META POR INSTRUTOR")
+        st.subheader("META POR PESSOAS TREINADAS")
         filtrar2 = st.checkbox("Filtrar IDs únicos - Meta 2")
         status2 = st.multiselect("Status para META 2:", status_opcoes_status, default=status_opcoes_status)
-        df_meta2 = meta2(df, df_guia, status2, filtrar2)
+        formatos_selecionados2 = st.multiselect("Formatos para META 2:", status_opcoes_formato, default=status_opcoes_formato)
+        df_meta2 = meta2(df, df_guia, status2, formatos_selecionados2, filtrar2)
         if not df_meta2.empty:
             st.dataframe(df_meta2, hide_index=True)
-            exibir_grafico(df_meta2, "Pessoas por Dia", "Meta", "Pessoas Treinadas", "Tipo")
         else:
             st.warning("Nenhum dado encontrado para META 2.")
 
@@ -225,8 +191,9 @@ if arquivo and arquivo_guia:
 
     st.subheader("AVALIAÇÃO DE CONHECIMENTO")
     filtrar5 = st.checkbox("Filtrar IDs únicos - Meta 5")
-    df_meta51, df_meta5 = meta5(df, filtrar5)
-    
+    formatos_selecionados5 = st.multiselect("Formatos para META 5:", status_opcoes_formato, default=status_opcoes_formato)
+    df_meta51, df_meta5 = meta5(df, formatos_selecionados5, filtrar5)
+
     if not df_meta5.empty:
         st.dataframe(df_meta5, hide_index=True)
         instrutor_selecionado = st.selectbox("Selecione um Instrutor", df_meta5['INSTRUTOR'].unique())
