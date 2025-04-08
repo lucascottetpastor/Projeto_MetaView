@@ -113,7 +113,7 @@ def meta5(df, formatos_selecionados, filtrar_por_id):
     df1 = df1.sort_values(by='INSTRUTOR', ascending=True)
     return df1, df
 
-st.image("logo_saiba_mais atualizado full wht.png", width=350)
+st.image("Logo Saiba+ Brastemp novo.png", width=350)
 
 st.markdown("""
     <style>
@@ -128,10 +128,10 @@ st.markdown("""
 dias = st.number_input("Digite a quantidade de dias úteis:", min_value=1, step=1)
 st.success(f"Você escolheu {dias} dias úteis.")
 
-st.markdown("""<h3 style='font-size: 24px; color: white;'>📁 Insira o arquivo Excel dos <strong>DADOS</strong></h3>""", unsafe_allow_html=True)
+st.markdown("""<h3 style='font-size: 24px; color: #58595b;'>📁 Insira o arquivo Excel dos <strong>DADOS</strong></h3>""", unsafe_allow_html=True)
 arquivo = st.file_uploader("", type=["xls", "xlsx"], key="dados_file")
 
-st.markdown("""<h3 style='font-size: 24px; color: white;'>📋 Insira o arquivo Excel do <strong>GUIA INSTRUTORES</strong></h3>""", unsafe_allow_html=True)
+st.markdown("""<h3 style='font-size: 24px; color: #58595b;'>📋 Insira o arquivo Excel do <strong>GUIA INSTRUTORES</strong></h3>""", unsafe_allow_html=True)
 arquivo_guia = st.file_uploader("", type=["xls", "xlsx"], key="guia_file")
 
 if arquivo and arquivo_guia:
@@ -227,7 +227,7 @@ if arquivo and arquivo_guia:
 
 st.markdown("""
 ---
-<div style='text-align: center; font-size: 20px; color: white;'>
+<div style='text-align: center; font-size: 20px; color: #58595b;'>
     Desenvolvido por Zoom Educação Corporativa © 2025
 </div>
 """, unsafe_allow_html=True)
