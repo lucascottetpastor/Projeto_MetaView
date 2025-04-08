@@ -129,10 +129,10 @@ dias = st.number_input("Digite a quantidade de dias úteis:", min_value=1, step=
 st.success(f"Você escolheu {dias} dias úteis.")
 
 st.markdown("""<h3 style='font-size: 24px; color: #58595b;'>📁 Insira o arquivo Excel dos <strong>DADOS</strong></h3>""", unsafe_allow_html=True)
-arquivo = st.file_uploader("", type=["xls", "xlsx"], key="dados_file")
+arquivo = st.file_uploader("Arquivo de dados", type=["xls", "xlsx"], key="dados_file", label_visibility="collapsed")
 
 st.markdown("""<h3 style='font-size: 24px; color: #58595b;'>📋 Insira o arquivo Excel do <strong>GUIA INSTRUTORES</strong></h3>""", unsafe_allow_html=True)
-arquivo_guia = st.file_uploader("", type=["xls", "xlsx"], key="guia_file")
+arquivo_guia = st.file_uploader("Guia de instrutores", type=["xls", "xlsx"], key="guia_file", label_visibility="collapsed")
 
 if arquivo and arquivo_guia:
     try:
