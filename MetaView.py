@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 from datetime import datetime
 import io
 
@@ -93,10 +91,10 @@ def meta4(df, status_selecionados, filtrar_por_id):
         st.error(f"Erro ao criar pivot table: {e}")
         return pd.DataFrame(columns=['INSTRUTOR', 'FORMATO', 'Quantidade'])
 
-def meta5(df, formatos_selecionados, filtrar_por_id):
+def meta5(df, status_selecionados, formatos_selecionados, filtrar_por_id):
     if filtrar_por_id:
         df = df.drop_duplicates(subset='COD. LOJA/LOCAL')
-    df = df[df['STATUS'].isin(['Realizado', 'No-show', 'Cancelado'])]
+    df = df[df['STATUS'].isin(status_selecionados)]
     df = df[df['FORMATO'].isin(formatos_selecionados)]
     df = df[['INSTRUTOR', 'LOJA/LOCAL', 'AVALIAÇÃO CONHECIMENTO']]
     df1 = df.copy()
@@ -113,7 +111,7 @@ def meta5(df, formatos_selecionados, filtrar_por_id):
     df1 = df1.sort_values(by='INSTRUTOR', ascending=True)
     return df1, df
 
-st.image("Logo_Saiba+_Brastemp_novo.png", width=350)
+st.image("Logo Saiba+ Brastemp novo.png", width=350)
 
 st.markdown("""
     <style>
@@ -191,8 +189,9 @@ if arquivo and arquivo_guia:
 
     st.subheader("AVALIAÇÃO DE CONHECIMENTO")
     filtrar5 = st.checkbox("Filtrar IDs únicos - Meta 5")
+    status5 = st.multiselect("Status para META 5:", status_opcoes_status, default=status_opcoes_status)
     formatos_selecionados5 = st.multiselect("Formatos para META 5:", status_opcoes_formato, default=status_opcoes_formato)
-    df_meta51, df_meta5 = meta5(df, formatos_selecionados5, filtrar5)
+    df_meta51, df_meta5 = meta5(df, status5, formatos_selecionados5, filtrar5)
 
     if not df_meta5.empty:
         st.dataframe(df_meta5, hide_index=True)
