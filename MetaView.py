@@ -111,7 +111,7 @@ def meta5(df, status_selecionados, formatos_selecionados, filtrar_por_id):
     df1 = df1.sort_values(by='INSTRUTOR', ascending=True)
     return df1, df
 
-st.image("Logo Saiba+ Brastemp novo.png", width=350)
+st.image("Logo_Saiba+_Brastemp_novo.png", width=350)
 
 st.markdown("""
     <style>
